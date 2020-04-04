@@ -3,36 +3,46 @@ const bcrypt = require('bcrypt');
 const moment = require('moment');
 const HttpStatus = require('http-status-codes');
 const { User, Todo, TodoList } = require('../database/models');
+const UserService = require('../services/userService');
+const handleError = require('../helpers/error');
 
-const saltRounds = 10;
-exports.createUser = (req, res) => {
-  const { firstName, lastName, email, password, userName } = req.body;
-  bcrypt
-    .hash(password, saltRounds)
-    .then(hash => {
-      User.create({ firstName, lastName, email, password: hash, userName })
-        .then(results => {
-          jwt.sign(
-            { email },
-            process.env.TOKEN_SECRET,
-            { expiresIn: '10h' },
-            (err, token) => {
-              res.send({ token });
-            }
-          );
-        })
-        .catch(err => {
-          res
-            .status(HttpStatus.BAD_REQUEST)
-            .send({ message: err.errors[0].message });
-        });
-    })
-    .catch(err => {
-      console.error(err);
-      res
-        .status(HttpStatus.BAD_REQUEST)
-        .send({ message: 'something went wrong, cannot create user' });
-    });
+/**
+ * @description create user
+ * @param {object} req request
+ * @param {object} res response
+ * @returns {Promise<*>} response promise
+ */
+const createUser = async (req, res) => {
+  const {
+    firstName: strFirstName,
+    lastName: strLastName,
+    email: strEmail,
+    password: strPassword,
+    userName: strUserName
+  } = req.body;
+
+  const objUser = {
+    firstName: strFirstName,
+    lastName: strLastName,
+    email: strEmail,
+    password: strPassword,
+    userName: strUserName
+  };
+
+  try {
+    const {
+      strToken,
+      bSuccess,
+      err,
+      bSequelizeError
+    } = await UserService.createOne(objUser);
+
+    if (bSuccess) return res.send({ token: strToken });
+    if (bSequelizeError) handleError(HttpStatus.BAD_REQUEST, err, res, err);
+    handleError(HttpStatus.BAD_REQUEST, 'Failed to sign up', res, err);
+  } catch (err) {
+    handleError(HttpStatus.BAD_REQUEST, 'Failed to sign up', res, err);
+  }
 };
 
 exports.loginUser = (req, res) => {
@@ -257,3 +267,5 @@ exports.getLeaderboard = (req, res) => {
     })
     .catch(err => console.log(err) && res.send({ message: err }));
 };
+
+exports.createUser = createUser;
