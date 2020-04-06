@@ -121,169 +121,81 @@ const getUserDetails = async (req, res) => {
   }
 };
 
-exports.deleteUserAccount = (req, res) => {
-  const { locals } = req;
+/**
+ * @description delete user
+ * @param {object} req request
+ * @param {object} res response
+ * @returns {Promise<*>} response promise
+ */
+const deleteUserAccount = async (req, res) => {
+  const { locals: strUserEmail } = req;
   const { email, password } = req.body;
+  const objUserParams = { email, password };
 
-  if (locals === email) {
-    User.findOne({ where: { email: locals } })
-      .then(user => {
-        const { dataValues } = user;
-        const { password: strHashedPassword } = dataValues;
-        if (!dataValues) {
-          res
-            .status(HttpStatus.BAD_REQUEST)
-            .send({ message: 'user could not be found' });
-        } else {
-          bcrypt
-            .compare(password, strHashedPassword)
-            .then(result => {
-              if (result) {
-                user
-                  .destroy()
-                  .then(() =>
-                    res.send({ message: 'successfully delete account' })
-                  )
-                  .catch(err =>
-                    res.status(HttpStatus.BAD_REQUEST).send({ message: err })
-                  );
-              } else {
-                res
-                  .status(HttpStatus.BAD_REQUEST)
-                  .send({ message: 'password does not match' });
-              }
-            })
-            .catch(err => {
-              console.error(err);
-              res
-                .status(HttpStatus.BAD_REQUEST)
-                .send({ message: 'password does not match' });
-            });
-        }
-      })
-      .catch(err => {
-        res.status(HttpStatus.BAD_REQUEST).send({ message: err });
-        console.log(err);
-      });
+  if (strUserEmail === email) {
+    try {
+      const { bSuccess, err } = await UserService.deleteOne(objUserParams);
+      if (bSuccess) return res.send('Successfully deleted account');
+      handleError(HttpStatus.BAD_REQUEST, 'Failed to delete user', res, err);
+    } catch (err) {
+      handleError(HttpStatus.BAD_REQUEST, 'Failed to delete user', res, err);
+    }
   } else {
-    res.status(HttpStatus.BAD_REQUEST).send({ message: 'wrong credentials' });
+    handleError(
+      HttpStatus.BAD_REQUEST,
+      'Failed delete user final',
+      res,
+      'Email from token does not match email in request'
+    );
   }
 };
 
-// TODO Write an SQL function to do all this logic
-exports.getUserStats = (req, res) => {
-  const { locals } = req;
-  User.findOne({ where: { email: locals } })
-    .then(user => {
-      user
-        .getTodoLists({
-          include: Todo
-        })
-        .then(todolists => {
-          const arrTotalPoints = todolists.map(todolist =>
-            todolist.todos.map(todo => todo.points)
-          );
-          const arrTodayPoints = todolists.map(todolist =>
-            todolist.todos.map(todo => {
-              const today = moment();
-              if (
-                todo.isCompleted &&
-                todo.completedDate &&
-                today.diff(todo.completedDate, 'days') === 0
-              ) {
-                return todo.points;
-              }
-              return 0;
-            })
-          );
-          const intTodosCompletedToday =
-            arrTodayPoints.length &&
-            arrTodayPoints[0].filter(
-              intNoOfPoints => intNoOfPoints !== 0 && intNoOfPoints
-            ).length;
-          const intTotalCompletedTodos =
-            arrTotalPoints.length && arrTotalPoints[0].length;
-          const intTodayPoints =
-            arrTodayPoints.length &&
-            arrTodayPoints[0].reduce((a, b) => a + b, 0);
-          const intTotalPoints =
-            arrTodayPoints.length &&
-            arrTotalPoints[0].reduce((a, b) => a + b, 0);
+/**
+ * @description user stats
+ * @param {object} req request
+ * @param {object} res response
+ * @returns {Promise<*>} response promise
+ */
+const getUserStats = async (req, res) => {
+  // TODO Write an SQL function to do all this logic
 
-          res.status(HttpStatus.OK).send({
-            todosCompletedToday: intTodosCompletedToday,
-            totalCompletedTodos: intTotalCompletedTodos,
-            todayPoints: intTodayPoints,
-            totalPoints: intTotalPoints
-          });
-        })
-        .catch(err => console.log(err));
-    })
-    .catch(err => res.send({ message: err }));
+  const { locals: strUserEmail } = req;
+
+  try {
+    const { objUserStats, bSuccess, err } = await UserService.showStats(
+      strUserEmail
+    );
+    if (bSuccess) return res.send(objUserStats);
+    handleError(HttpStatus.BAD_REQUEST, 'Failed to update details', res, err);
+  } catch (err) {
+    handleError(HttpStatus.BAD_REQUEST, 'Failed to update details', res, err);
+  }
 };
 
-exports.getLeaderboard = (req, res) => {
-  User.findAll({
-    include: [
-      {
-        model: TodoList,
-        as: 'todoLists',
-        include: { model: Todo, as: 'todos' }
-      }
-    ]
-  })
-    .then(arrUsersData => {
-      console.log('USERS DATA', arrUsersData);
-      const arrLeaderboardData = arrUsersData.map(objUser => {
-        objUser.todoLists.map(todolist => {
-          if (todolist.todos.length === 0)
-            return res.send({ messages: 'no todos' });
-          return todolist.todos.map(todo => todo.points);
-        });
-        const arrTotalPoints = objUser.todoLists.map(todolist =>
-          todolist.todos.map(todo => todo.isCompleted !== null && todo.points)
-        );
-        console.log(arrTotalPoints);
-        const arrTodayPoints = objUser.todoLists.map(todolist =>
-          todolist.todos.map(todo => {
-            const today = moment();
-            if (
-              todo.isCompleted &&
-              todo.completedDate &&
-              today.diff(todo.completedDate, 'days') === 0
-            ) {
-              return todo.points;
-            }
-            return 0;
-          })
-        );
-        const intTodosCompletedToday =
-          arrTodayPoints.length &&
-          arrTodayPoints[0].filter(
-            intNoOfPoints => intNoOfPoints !== 0 && intNoOfPoints
-          ).length;
-        const intTotalCompletedTodos =
-          arrTotalPoints.length && arrTotalPoints[0].length;
-        const intTodayPoints =
-          arrTodayPoints.length && arrTodayPoints[0].reduce((a, b) => a + b, 0);
-        const intTotalPoints =
-          arrTodayPoints.length && arrTotalPoints[0].reduce((a, b) => a + b, 0);
-        return {
-          username: objUser.userName,
-          todosCompletedToday: intTodosCompletedToday,
-          totalCompletedTodos: intTotalCompletedTodos,
-          todayPoints: intTodayPoints,
-          totalPoints: intTotalPoints
-        };
-      });
-      arrLeaderboardData.sort((a, b) => b.totalPoints - a.totalPoints);
-
-      res.send({ leaderboard: arrLeaderboardData });
-    })
-    .catch(err => console.log(err) && res.send({ message: err }));
+/**
+ * @description leaderboard
+ * @param {object} req request
+ * @param {object} res response
+ * @returns {Promise<*>} response promise
+ */
+const getLeaderboard = async (req, res) => {
+  try {
+    const {
+      arrLeaderboardData,
+      bSuccess,
+      err
+    } = await UserService.leaderBoard();
+    if (bSuccess) return res.send(arrLeaderboardData);
+    handleError(HttpStatus.BAD_REQUEST, 'Failed to get leaderboard', res, err);
+  } catch (err) {
+    handleError(HttpStatus.BAD_REQUEST, 'Failed to get leaderboard', res, err);
+  }
 };
 
 exports.createUser = createUser;
 exports.loginUser = loginUser;
 exports.updateUserDetails = updateUserDetails;
 exports.getUserDetails = getUserDetails;
+exports.deleteUserAccount = deleteUserAccount;
+exports.getUserStats = getUserStats;
+exports.getLeaderboard = getLeaderboard;

@@ -1,0 +1,7 @@
+
+
+GET http://localhost:9000/todolist HTTP/1.1
+Authorization: Bearer 
+###
+
+GET https://example.com/topics/1 HTTP/1.1
