@@ -1,4 +1,5 @@
 const { Tag, TodoList, Todo } = require('../database/models');
+const EventEmitter = require('../subscribers/completedTodo');
 
 /**
  * @description Attempt to create a todo with the provided object
@@ -59,6 +60,7 @@ const updateOne = async (strTodoId, objTodoParams) => {
     if (bIsCompleted) {
       const strCompletedDate = new Date().toISOString().split('T')[0];
       objTodoParams.completedDate = strCompletedDate;
+      EventEmitter.emit('todo_completed');
     }
 
     const objUpdatedTodo = await objTodo.update(objTodoParams);
