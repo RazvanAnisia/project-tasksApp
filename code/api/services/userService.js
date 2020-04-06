@@ -19,7 +19,7 @@ const signJWT = strEmail => {
 /**
  * @description Attempt to create a user with the provided object
  * @param  {object} objUserParams  all the fields for the new user
- * @returns {Promise<{success: boolean, result: *}|{success: boolean, err: Error}>} promise with newTodo
+ * @returns {Promise<{success: boolean, result: *}|{success: boolean, err: Error}>} promise with new token
  */
 const createOne = async objUserParams => {
   const { email, password } = objUserParams;
@@ -45,9 +45,31 @@ const createOne = async objUserParams => {
 };
 
 /**
- *
+ * @description Attempt to login user with the provided email
+ * @param  {object} objUserParams  params from the user
+ * @returns {Promise<{success: boolean, result: *}|{success: boolean, err: Error}>} promise with new token
+ */
+const login = async objUserParams => {
+  const { email, password } = objUserParams;
+
+  try {
+    const objFoundUser = await User.findOne({ where: { email } });
+    const bPasswordMatch = await bcrypt.compare(
+      password,
+      objFoundUser.password
+    );
+
+    if (objFoundUser && bPasswordMatch)
+      return { bSuccess: true, strToken: signJWT(email) };
+  } catch (err) {
+    return { bSuccess: false, err: err };
+  }
+};
+
+/**
+ * @description find a specific user
  * @param {string} strUserEmail user email
- * @returns {object} user
+ * @returns {Promise<{success: boolean, result: *}|{success: boolean, err: Error}>} promise with user object
  */
 const findOne = async strUserEmail => {
   try {
@@ -63,5 +85,44 @@ const findOne = async strUserEmail => {
   }
 };
 
-exports.find = findOne;
+/**
+ * @description attempt to update user
+ * @param {string} strUserEmail user email
+ * @param  {object} objUserParams  params from the user
+ * @returns {Promise<{success: boolean, result: *}|{success: boolean, err: Error}>} promise with  updated user object
+ */
+const updateOne = async (strUserEmail, objUserParams) => {
+  try {
+    const objFoundUser = await User.findOne({ where: { email: strUserEmail } });
+    const objUpdatedUser = await objFoundUser.update(objUserParams);
+
+    return objUpdatedUser ? { bSuccess: true } : { bSuccess: false };
+  } catch (err) {
+    return { bSuccess: false, err };
+  }
+};
+
+/**
+ * @description attempt to update user
+ * @param {string} strUserEmail user email
+ * @returns {Promise<{success: boolean, result: *}|{success: boolean, err: Error}>} promise with  updated user object
+ */
+const showOne = async strUserEmail => {
+  try {
+    const objFoundUser = await User.findOne({ where: { email: strUserEmail } });
+    const { email, firstName, lastName, userName } = objFoundUser;
+    const objUserDetails = { email, firstName, lastName, userName };
+
+    return objFoundUser
+      ? { bSuccess: true, objUserDetails }
+      : { bSuccess: false };
+  } catch (err) {
+    return { bSuccess: false, err };
+  }
+};
+
+exports.findOne = findOne;
 exports.createOne = createOne;
+exports.login = login;
+exports.updateOne = updateOne;
+exports.showOne = showOne;

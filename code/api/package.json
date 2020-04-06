@@ -13,7 +13,9 @@
     "migrate": "npx sequelize db:migrate --env test",
     "migrate:reset": "npx sequelize db:migrate:undo:all --env test && npm run migrate",
     "test": "docker exec -it node-app npx cross-env NODE_ENV=test jest --watchAll --verbose",
-    "pretest": "docker exec -it node-app npx cross-env NODE_ENV=test npm run migrate:reset"
+    "pretest": "docker exec -it node-app npx cross-env NODE_ENV=test npm run migrate:reset",
+    "migrate:db": "docker exec -it node-app npx sequelize db:migrate ",
+    "migrate:rollback": "docker exec -it node-app npx sequelize db:migrate:undo:all"
   },
   "author": "",
   "license": "ISC",

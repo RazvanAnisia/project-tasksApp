@@ -23,6 +23,19 @@ const fetchAll = async objUser => {
  */
 const createOne = async (objUser, strTagName, strTagColor) => {
   try {
+    // check if tag name is unique for user
+    const objMatchingTag = await Tag.findOne({
+      where: { name: strTagName },
+      attributes: ['userId']
+    });
+
+    if (objMatchingTag.userId === objUser.id)
+      return {
+        bSuccess: false,
+        err: 'Tag name must be unique',
+        strValidationErr: 'Tag name must be unique'
+      };
+
     const objNewTag = await objUser.createTag({
       name: strTagName,
       color: strTagColor

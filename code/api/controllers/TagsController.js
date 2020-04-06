@@ -31,16 +31,21 @@ const createTag = async (req, res) => {
   const { user: objUser } = req;
 
   try {
-    const { objNewTag, bSuccess, err } = await TagsService.createOne(
-      objUser,
-      strTagName,
-      strTagColor
-    );
+    const {
+      objNewTag,
+      bSuccess,
+      err,
+      strValidationErr
+    } = await TagsService.createOne(objUser, strTagName, strTagColor);
+
     if (bSuccess)
       return res.send({
         message: 'Created tag',
         data: objNewTag
       });
+    if (strValidationErr)
+      handleError(HttpStatus.UNPROCESSABLE_ENTITY, strValidationErr, res, err);
+
     handleError(HttpStatus.CONFLICT, 'Failed to create tag', res, err);
   } catch (err) {
     handleError(HttpStatus.CONFLICT, 'Failed to create tag', res, err);

@@ -5,7 +5,7 @@ const userService = require('../services/userService');
 exports.verifyUser = async (req, res, next) => {
   const { locals: strUserEmail } = req;
   try {
-    const { bSuccess, objUser, err } = await userService.findUser(strUserEmail);
+    const { bSuccess, objUser, err } = await userService.findOne(strUserEmail);
     if (bSuccess) {
       req.user = objUser;
       next();

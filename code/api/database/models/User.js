@@ -38,7 +38,8 @@ module.exports = (sequelize, DataTypes) => {
     const { TodoList, Tag } = models;
     User.hasMany(TodoList, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
+      as: 'todoLists'
     });
     User.hasMany(Tag, {
       foreignKey: 'userId',

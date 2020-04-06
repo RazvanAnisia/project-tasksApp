@@ -21,7 +21,7 @@ const Todo = sequelize.define('todo', {
     allowNull: false,
     defaultValue: false
   },
-  // TODO add validation or constraint that i cannot be in the past
+  // TODO  TEST validation or constraint that i cannot be in the past
   dueDate: {
     type: Sequelize.DATE,
     allowNull: true,

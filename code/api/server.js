@@ -78,6 +78,8 @@ const getLeaderboard = async socket => {
 //   console.log(`Socket server listening on port ${process.env.SOCKET_PORT}`)
 // );
 
+// TODO Add cron jobs https://scotch.io/tutorials/nodejs-cron-jobs-by-examples
+// TODO Secur app with Helmet.js https://app.getpocket.com/read/2753537192
 // TODO When an event is completed, it will triggered a completed event, based on the priority and points it had, user will gain points
 // TODO Add Levels for users(create a levels table with some predefined levels and points needed ) and associate each user to one
 // TODO add cross-orogin CORS headers so only our frontend can access the api
@@ -86,5 +88,6 @@ const getLeaderboard = async socket => {
 // TODO Add validation for all frontend data https://dev.to/itnext/joi-awesome-code-validation-for-node-js-and-express-35pk
 // TODO Add support for profile avatars, cloudinary and cdm
 // TODO Add confirmation email with Sendgrid or Mailgun
-
+// TODO add coveralls free plan for testing coverage https://coveralls.io/pricing
+// TODO add travis ci for readme badge https://github.com/nedssoft/sequelize-with-postgres-tutorial/blob/master/.travis.yml
 module.exports = app;

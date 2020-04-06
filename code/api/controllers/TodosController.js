@@ -3,7 +3,6 @@ const TodoService = require('../services/todoService');
 const handleError = require('../helpers/error');
 
 /**
- *
  * @description create todo
  * @param {object} req request
  * @param {object} res response
