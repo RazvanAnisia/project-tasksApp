@@ -7,38 +7,38 @@ class App extends Component {
     strTodoDescription: '',
     strTitle: '',
     strDueDate: new Date(),
-    leaderboard: []
+    leaderboard: [],
   };
 
   componentDidMount() {
-    const socket = socketIOClient('http://localhost:9008');
-    socket.on('leaderboard', data => this.setState({ leaderboard: data.leaderboard }));
+    const socket = socketIOClient('http://localhost:9000');
+    socket.on('leaderboard', (data) => this.setState({ leaderboard: data }));
   }
 
-  handleChange = strValue => {
+  handleChange = (strValue) => {
     this.setState({
-      strTodoDescription: strValue
+      strTodoDescription: strValue,
     });
   };
-  handleTitleChange = strValue => {
+  handleTitleChange = (strValue) => {
     this.setState({
-      strTitle: strValue
+      strTitle: strValue,
     });
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     const token = localStorage.getItem('authToken');
     e.preventDefault();
     fetch('http://localhost:9000/todo', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         title: this.state.strTitle,
         description: this.state.strTodoDescription,
-        dueDate: this.state.strDueDate.toISOString().split('T')[0]
-      })
+        dueDate: this.state.strDueDate.toISOString().split('T')[0],
+      }),
     });
   };
   render() {
@@ -53,7 +53,7 @@ class App extends Component {
         <SignUp /> */}
         {/* {<p>{JSON.stringify(this.state.leaderboard)}</p>} */}
         {this.state.leaderboard.length !== 0 &&
-          this.state.leaderboard.map(entry => (
+          this.state.leaderboard.map((entry) => (
             <>
               <div>
                 <strong>{entry.username}</strong>

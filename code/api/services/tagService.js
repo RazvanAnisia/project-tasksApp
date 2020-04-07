@@ -29,7 +29,7 @@ const createOne = async (objUser, strTagName, strTagColor) => {
       attributes: ['userId']
     });
 
-    if (objMatchingTag.userId === objUser.id)
+    if (objMatchingTag && objMatchingTag.userId === objUser.id)
       return {
         bSuccess: false,
         err: 'Tag name must be unique',

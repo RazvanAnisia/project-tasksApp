@@ -1,8 +1,4 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const moment = require('moment');
 const HttpStatus = require('http-status-codes');
-const { User, Todo, TodoList } = require('../database/models');
 const UserService = require('../services/userService');
 const handleError = require('../helpers/error');
 

@@ -22,3 +22,7 @@ Template for dockerizing a MERN app with docker-compose:
 ```sql
  GRANT ALL PRIVILEGES ON *.*  TO USER@localhost identified by 'PASSWORD';
 ```
+
+### Changelog
+
+Added socket.io and pub sub

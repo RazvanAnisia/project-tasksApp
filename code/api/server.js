@@ -19,8 +19,10 @@ const tags = require('./routes/tags');
 const auth = require('./middleware/auth');
 const authorization = require('./middleware/authorization');
 const logger = require('./middleware/logger');
+const { leaderBoardUpdate } = require('./subscribers/listeners');
+const EventTypes = require('./subscribers/eventTypes');
+const EventEmitter = require('./subscribers/eventsSetup');
 // const errorHandler = require('./middleware/errorHandler');
-
 app.use(logger);
 
 app.use(cors());
@@ -53,26 +55,27 @@ app.use('/signup', signup);
 
 const PORT = process.env.NODE_ENV === 'test' ? 9001 : process.env.PORT || 9000;
 
-app.listen(PORT, () => {
+io.on('connection', socket => {
+  console.log('New client connected');
+  EventEmitter.emit(EventTypes.LEADERBOARD_UPDATE, socket);
+  EventEmitter.on(EventTypes.TODO_COMPLETED, () => leaderBoardUpdate(socket));
+
+  socket.on('disconnect', () => console.log('Client disconnected'));
+});
+
+server.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
 
-const getLeaderboard = async socket => {
-  try {
-    const res = await axios.get('http://localhost:9000/leaderboard');
-    // console.log('emitting leaderboard', res);
-    socket.emit('leaderboard', res.data);
-  } catch (error) {
-    console.error(`Error: ${error}`);
-  }
-};
-
-// // Socket server
-// io.on('connection', socket => {
-//   console.log('New client connected');
-//   setInterval(() => getLeaderboard(socket), 5000);
-//   socket.on('disconnect', () => console.log('Client disconnected'));
-// });
+// const getLeaderboard = async socket => {
+//   try {
+//     const res = await axios.get('http://localhost:9000/leaderboard');
+//     // console.log('emitting leaderboard', res);
+//     socket.emit('leaderboard', res.data);
+//   } catch (error) {
+//     console.error(`Error: ${error}`);
+//   }
+// };
 
 // server.listen(process.env.SOCKET_PORT, () =>
 //   console.log(`Socket server listening on port ${process.env.SOCKET_PORT}`)
@@ -84,10 +87,17 @@ const getLeaderboard = async socket => {
 // TODO Add Levels for users(create a levels table with some predefined levels and points needed ) and associate each user to one
 // TODO add cross-orogin CORS headers so only our frontend can access the api
 // TODO Add FAKER library for seeding the db
-// TODO Add migrations
 // TODO Add validation for all frontend data https://dev.to/itnext/joi-awesome-code-validation-for-node-js-and-express-35pk
 // TODO Add support for profile avatars, cloudinary and cdm
 // TODO Add confirmation email with Sendgrid or Mailgun
 // TODO add coveralls free plan for testing coverage https://coveralls.io/pricing
 // TODO add travis ci for readme badge https://github.com/nedssoft/sequelize-with-postgres-tutorial/blob/master/.travis.yml
-module.exports = app;
+process.on('unhandledRejection', (error, promise) => {
+  console.log(
+    ' Oh Lord! We forgot to handle a promise rejection here: ',
+    promise
+  );
+  console.log(' The error was: ', error);
+});
+
+module.exports = server;
