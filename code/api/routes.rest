@@ -1,7 +1,17 @@
 
 
-GET http://localhost:9000/todolist HTTP/1.1
-Authorization: Bearer 
-###
+# GET http://localhost:9000/todolist HTTP/1.1
+# Authorization: Bearer 
+# ###
 
-GET https://example.com/topics/1 HTTP/1.1
+POST http://localhost:9000/signup HTTP/1.1
+content-type: application/json
+
+{ 
+	"firstName":"Master2",
+    "lastName":"Spider",
+    "email":"spider27@gmail.com",
+    "password":"lightsaber",
+    "userName":"spiderman27"
+}
+

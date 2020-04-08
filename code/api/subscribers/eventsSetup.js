@@ -1,11 +1,15 @@
-const events = require('events');
-const eventEmitter = new events.EventEmitter();
+const Events = require('events');
 const eventTypes = require('./eventTypes');
-const { leaderBoardUpdate } = require('./listeners');
+const { leaderBoardUpdate, sendWelcomeEmail } = require('./listeners');
 
-const { LEADERBOARD_UPDATE } = eventTypes;
+const { LEADERBOARD_UPDATE, USER_SIGN_UP } = eventTypes;
+
+const EventEmitter = new Events();
 
 // Register event listeners
-eventEmitter.on(LEADERBOARD_UPDATE, leaderBoardUpdate);
+EventEmitter.on(LEADERBOARD_UPDATE, leaderBoardUpdate);
 
-module.exports = eventEmitter;
+EventEmitter.on(USER_SIGN_UP, sendWelcomeEmail);
+// TODO Add user changed email event, send new email when it happens
+
+module.exports = EventEmitter;

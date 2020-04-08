@@ -4,7 +4,7 @@ const cors = require('cors');
 const app = express();
 const http = require('http');
 const socketIo = require('socket.io');
-const axios = require('axios');
+// const axios = require('axios');
 
 const server = http.createServer(app);
 const io = socketIo(server);
@@ -22,9 +22,8 @@ const logger = require('./middleware/logger');
 const { leaderBoardUpdate } = require('./subscribers/listeners');
 const EventTypes = require('./subscribers/eventTypes');
 const EventEmitter = require('./subscribers/eventsSetup');
-// const errorHandler = require('./middleware/errorHandler');
-app.use(logger);
 
+app.use(logger);
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -36,22 +35,6 @@ app.use('/tag', auth.verifyToken, authorization.verifyUser, tags);
 app.use('/user', auth.verifyToken, authorization.verifyUser, user);
 app.use('/login', login);
 app.use('/signup', signup);
-
-// app.use(errorHandler);
-
-// require('./database/relations');
-
-// sequelize
-//   .sync()
-//   // .sync({ force: true })
-//   .then(() =>
-//     // app.listen(process.env.PORT || 9000, () => {
-//     //   console.log(`listening on port ${process.env.PORT}`);
-//     // })
-//   )
-//   .catch(err => {
-//     console.log(err);
-//   });
 
 const PORT = process.env.NODE_ENV === 'test' ? 9001 : process.env.PORT || 9000;
 
@@ -67,22 +50,8 @@ server.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
 
-// const getLeaderboard = async socket => {
-//   try {
-//     const res = await axios.get('http://localhost:9000/leaderboard');
-//     // console.log('emitting leaderboard', res);
-//     socket.emit('leaderboard', res.data);
-//   } catch (error) {
-//     console.error(`Error: ${error}`);
-//   }
-// };
-
-// server.listen(process.env.SOCKET_PORT, () =>
-//   console.log(`Socket server listening on port ${process.env.SOCKET_PORT}`)
-// );
-
 // TODO Add cron jobs https://scotch.io/tutorials/nodejs-cron-jobs-by-examples
-// TODO Secur app with Helmet.js https://app.getpocket.com/read/2753537192
+// TODO Secure app with Helmet.js https://app.getpocket.com/read/2753537192
 // TODO When an event is completed, it will triggered a completed event, based on the priority and points it had, user will gain points
 // TODO Add Levels for users(create a levels table with some predefined levels and points needed ) and associate each user to one
 // TODO add cross-orogin CORS headers so only our frontend can access the api

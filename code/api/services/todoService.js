@@ -1,7 +1,6 @@
 const { Tag, TodoList, Todo } = require('../database/models');
 const EventEmitter = require('../subscribers/eventsSetup');
 const EventTypes = require('../subscribers/eventTypes');
-
 /**
  * @description Attempt to create a todo with the provided object
  * @param {string} strTodoListId todolist id

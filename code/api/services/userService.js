@@ -31,10 +31,14 @@ const createOne = async objUserParams => {
       password: strHashedPassword
     });
     const strToken = signJWT(email);
-    if (strHashedPassword && objNewUser && strToken)
-      return { bSuccess: true, strToken };
+    if (strHashedPassword && objNewUser && strToken) {
+      return {
+        bSuccess: true,
+        strToken
+      };
+    }
   } catch (err) {
-    if (err.errors[0].message)
+    if (err.errors && err.errors[0].message)
       return {
         bSuccess: false,
         err: err.errors[0].message,

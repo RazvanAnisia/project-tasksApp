@@ -1,6 +1,8 @@
 const HttpStatus = require('http-status-codes');
 const UserService = require('../services/userService');
 const handleError = require('../helpers/error');
+const EventEmitter = require('../subscribers/eventsSetup');
+const EventTypes = require('../subscribers/eventTypes');
 
 /**
  * @description create user
@@ -33,7 +35,11 @@ const createUser = async (req, res) => {
       bSequelizeError
     } = await UserService.createOne(objUser);
 
-    if (bSuccess) return res.send({ token: strToken });
+    if (bSuccess)
+      return res.send(
+        { token: strToken } &&
+          EventEmitter.emit(EventTypes.USER_SIGN_UP, objUser.email)
+      );
     if (bSequelizeError) handleError(HttpStatus.BAD_REQUEST, err, res, err);
     handleError(HttpStatus.BAD_REQUEST, 'Failed to sign up', res, err);
   } catch (err) {
