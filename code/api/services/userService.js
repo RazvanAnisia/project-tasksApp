@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const moment = require('moment');
 const { User, Todo, TodoList } = require('../database/models');
+const cloudinary = require('../loaders.js');
 
 const intSaltRounds = 10;
 
@@ -22,12 +23,16 @@ const signJWT = strEmail => {
  * @returns {Promise<{success: boolean, result: *}|{success: boolean, err: Error}>} promise with new token
  */
 const createOne = async objUserParams => {
-  const { email, password } = objUserParams;
+  const { email, password, profilePicture } = objUserParams;
 
   try {
+    const objPicture = await cloudinary.uploader.upload(profilePicture);
+    const { url: strPictureUrl } = objPicture;
     const strHashedPassword = await bcrypt.hash(password, intSaltRounds);
+
     const objNewUser = await User.create({
       ...objUserParams,
+      profilePicture: strPictureUrl,
       password: strHashedPassword
     });
     const strToken = signJWT(email);
@@ -114,8 +119,21 @@ const updateOne = async (strUserEmail, objUserParams) => {
 const showOne = async strUserEmail => {
   try {
     const objFoundUser = await User.findOne({ where: { email: strUserEmail } });
-    const { email, firstName, lastName, userName } = objFoundUser;
-    const objUserDetails = { email, firstName, lastName, userName };
+    const {
+      email,
+      firstName,
+      lastName,
+      userName,
+      profilePicture
+    } = objFoundUser;
+
+    const objUserDetails = {
+      email,
+      firstName,
+      lastName,
+      userName,
+      profilePicture
+    };
 
     return objFoundUser
       ? { bSuccess: true, objUserDetails }

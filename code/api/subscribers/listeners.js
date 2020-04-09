@@ -7,13 +7,11 @@ const mg = mailgun({
   domain: DOMAIN
 });
 
-console.log(process.env.MAILGUN_API_KEY);
 /**
  * @returns {undefined}
  * @param {object} socket socket instance
  */
 const leaderBoardUpdate = async socket => {
-  console.log('hit');
   // TODO websocket payload update to all connected users
   try {
     const { arrLeaderboardData, bSuccess } = await UserService.leaderBoard();
@@ -40,7 +38,6 @@ const sendWelcomeEmail = async strEmail => {
       'Thank you for signing up with out productivity service. Please active your account by clicking <a href="http://localhost:3000">Link</a>'
   };
   mg.messages().send(data, (error, body) => {
-    console.log(body);
     console.log(error);
   });
 };

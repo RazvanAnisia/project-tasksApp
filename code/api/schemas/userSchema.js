@@ -22,7 +22,8 @@ const userSchemas = {
       .required()
       .alphanum()
       .min(3)
-      .max(50)
+      .max(50),
+    profilePicture: Joi.any()
   }),
   update: Joi.object().keys({
     firstName: Joi.string()

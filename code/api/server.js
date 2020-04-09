@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 
 const cors = require('cors');
 const app = express();
@@ -25,8 +26,8 @@ const EventEmitter = require('./subscribers/eventsSetup');
 
 app.use(logger);
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/todo', auth.verifyToken, authorization.verifyUser, todos);
 app.use('/leaderboard', leaderboard);
@@ -50,7 +51,7 @@ server.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
 
-// TODO Add cron jobs https://scotch.io/tutorials/nodejs-cron-jobs-by-examples
+// TODO Add cron jobs https://scotch.io/tutorials/nodejs-cron-jobs-by-examples maybe using agenda JS
 // TODO Secure app with Helmet.js https://app.getpocket.com/read/2753537192
 // TODO When an event is completed, it will triggered a completed event, based on the priority and points it had, user will gain points
 // TODO Add Levels for users(create a levels table with some predefined levels and points needed ) and associate each user to one
@@ -58,7 +59,6 @@ server.listen(PORT, () => {
 // TODO Add FAKER library for seeding the db
 // TODO Add validation for all frontend data https://dev.to/itnext/joi-awesome-code-validation-for-node-js-and-express-35pk
 // TODO Add support for profile avatars, cloudinary and cdm
-// TODO Add confirmation email with Sendgrid or Mailgun
 // TODO add coveralls free plan for testing coverage https://coveralls.io/pricing
 // TODO add travis ci for readme badge https://github.com/nedssoft/sequelize-with-postgres-tutorial/blob/master/.travis.yml
 process.on('unhandledRejection', (error, promise) => {

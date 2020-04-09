@@ -50,7 +50,8 @@ class App extends Component {
           <input onChange={e => this.handleChange(e.target.value)} value={this.state.strTodoDescription}></input>
           <button onClick={this.handleSubmit}>Submit</button>
         </form>
-        <SignUp /> */}
+         */}
+        <SignUp />
         {/* {<p>{JSON.stringify(this.state.leaderboard)}</p>} */}
         {this.state.leaderboard.length !== 0 &&
           this.state.leaderboard.map((entry) => (

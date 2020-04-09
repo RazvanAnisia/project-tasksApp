@@ -16,7 +16,8 @@ const createUser = async (req, res) => {
     lastName: strLastName,
     email: strEmail,
     password: strPassword,
-    userName: strUserName
+    userName: strUserName,
+    profilePicture: strProfilePicture
   } = req.body;
 
   const objUser = {
@@ -24,7 +25,8 @@ const createUser = async (req, res) => {
     lastName: strLastName,
     email: strEmail,
     password: strPassword,
-    userName: strUserName
+    userName: strUserName,
+    profilePicture: strProfilePicture
   };
 
   try {
@@ -35,11 +37,11 @@ const createUser = async (req, res) => {
       bSequelizeError
     } = await UserService.createOne(objUser);
 
-    if (bSuccess)
-      return res.send(
-        { token: strToken } &&
-          EventEmitter.emit(EventTypes.USER_SIGN_UP, objUser.email)
-      );
+    if (bSuccess) {
+      EventEmitter.emit(EventTypes.USER_SIGN_UP, objUser.email);
+      return res.send({ token: strToken });
+    }
+
     if (bSequelizeError) handleError(HttpStatus.BAD_REQUEST, err, res, err);
     handleError(HttpStatus.BAD_REQUEST, 'Failed to sign up', res, err);
   } catch (err) {
@@ -83,6 +85,7 @@ const loginUser = async (req, res) => {
 const updateUserDetails = async (req, res) => {
   const { locals: strUserEmail } = req;
   const { email, firstName, lastName, userName, password } = req.body;
+  // TODO needs to support profile picture now
   const objUserParams = {
     email,
     firstName,

@@ -13,5 +13,3 @@ const truncate = async () => {
 };
 
 module.exports = truncate;
-
-console.log(db.sequelize.models);
