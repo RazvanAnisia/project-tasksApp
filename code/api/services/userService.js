@@ -203,6 +203,7 @@ const showStats = async strUserEmail => {
  * @returns {Promise<{success: boolean, result: *}|{success: boolean, err: Error}>} promise with leaderboard
  */
 const leaderBoard = async () => {
+  // TODO Based on the priority and points it had, user will gain points
   try {
     const arrUsersData = await User.findAll({
       include: [

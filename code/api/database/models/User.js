@@ -35,7 +35,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
       }
     },
-    {}
+    {
+      // TODO Add user changed email hook EventEmitter.emit(EventTypes.USER_SIGN_UP, objUser.email);
+    }
   );
 
   User.associate = models => {

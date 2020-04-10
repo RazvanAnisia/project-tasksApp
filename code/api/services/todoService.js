@@ -58,6 +58,7 @@ const updateOne = async (strTodoId, objTodoParams) => {
     });
 
     if (bIsCompleted) {
+      // TODO if todo is completed, send a payload with the new user stats as well
       const strCompletedDate = new Date().toISOString().split('T')[0];
       objTodoParams.completedDate = strCompletedDate;
       EventEmitter.emit(EventTypes.TODO_COMPLETED);

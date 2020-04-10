@@ -20,7 +20,7 @@ const tags = require('./routes/tags');
 const auth = require('./middleware/auth');
 const authorization = require('./middleware/authorization');
 const logger = require('./middleware/logger');
-const { leaderBoardUpdate } = require('./subscribers/listeners');
+const { leaderBoardUpdate } = require('./subscribers/eventHandlers');
 const EventTypes = require('./subscribers/eventTypes');
 const EventEmitter = require('./subscribers/eventsSetup');
 
@@ -51,14 +51,12 @@ server.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
 
-// TODO Add cron jobs https://scotch.io/tutorials/nodejs-cron-jobs-by-examples maybe using agenda JS
+// TODO Do a security audit, for sql injection etc.
 // TODO Secure app with Helmet.js https://app.getpocket.com/read/2753537192
-// TODO When an event is completed, it will triggered a completed event, based on the priority and points it had, user will gain points
 // TODO Add Levels for users(create a levels table with some predefined levels and points needed ) and associate each user to one
 // TODO add cross-orogin CORS headers so only our frontend can access the api
 // TODO Add FAKER library for seeding the db
 // TODO Add validation for all frontend data https://dev.to/itnext/joi-awesome-code-validation-for-node-js-and-express-35pk
-// TODO Add support for profile avatars, cloudinary and cdm
 // TODO add coveralls free plan for testing coverage https://coveralls.io/pricing
 // TODO add travis ci for readme badge https://github.com/nedssoft/sequelize-with-postgres-tutorial/blob/master/.travis.yml
 process.on('unhandledRejection', (error, promise) => {
@@ -70,3 +68,9 @@ process.on('unhandledRejection', (error, promise) => {
 });
 
 module.exports = server;
+
+/**
+ * Levels Table - levelId   level   pointsNeeded
+ * Write a migration and seeder for that, so it would seed the db with the levels
+ * (create 1000levels) using a forloop. (incremented by 100 extra points)
+ */

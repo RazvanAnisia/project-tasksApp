@@ -69,12 +69,10 @@ const loginUser = async (req, res) => {
 };
 
 // TODO add an update password function (in case user forgets their password)
-// TODO add email integration win sendgrid/mailgun
 // TODO If they forget their password , send then a link in their email which will keep a token(xpires in 10min)
 //  The token auths them AGAINST to our db, we are then sure who they are, and they can update their password
 // TODO If a user wants to change their email, first input password, then enter new email in.
 // After that send them a new email to their new address , with a link.
-// TODO Create a listener and an event for (user sign up) or user changed email, to trigger a service function to send the email
 
 /**
  * @description update user details

@@ -42,7 +42,13 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 1
       }
     },
-    {}
+    {
+      hooks: {
+        beforeUpdate: (Todo, options) => {
+          console.log('updating', Todo);
+        }
+      }
+    }
   );
   Todo.associate = models => {
     const { TodoList, TodoTag, Tag } = models;

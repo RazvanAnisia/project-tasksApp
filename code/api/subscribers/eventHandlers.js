@@ -32,7 +32,7 @@ const sendWelcomeEmail = async strEmail => {
   const data = {
     from:
       'Mailgun Sandbox postmaster@sandbox89bc353640294424bca16e4f2c621cf5.mailgun.org',
-    to: 'anisiarazvan@gmail.com',
+    to: strEmail,
     subject: 'Welcome to TodoApp 😀',
     html:
       'Thank you for signing up with out productivity service. Please active your account by clicking <a href="http://localhost:3000">Link</a>'
